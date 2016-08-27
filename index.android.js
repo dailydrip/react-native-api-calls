@@ -3,31 +3,28 @@ import {
   AppRegistry,
   StyleSheet,
   Text,
-  Network,
+  Image,
   View
 } from 'react-native';
+
+import API from './api/API'
 
 class apiCalls extends Component {
 
   constructor(props){
     super(props);
-    this.state = { movies: [] }
+    this.state = { pokemon: '' }
   }
 
-  getMoviesFromApiAsync() {
-    return fetch('https://facebook.github.io/react-native/movies.json')
-      .then((response) => response.json())
-      .then((responseJson) => {
-        console.log(responseJson.movies);
-        this.setState({movies: responseJson.movies});
-      })
-      .catch((error) => {
-        console.error(error);
+  getPokemonInfo() {
+    API.getPokemon('pikachu').then((pokemon) => {
+        console.log(pokemon)
+        this.setState({pokemon})
       });
   }
 
-  componentWillMount(){
-    this.getMoviesFromApiAsync();
+  componentDidMount(){
+    this.getPokemonInfo()
   }
 
   render() {
@@ -35,13 +32,19 @@ class apiCalls extends Component {
     return (
       <View style={styles.container}>
         <Text style={styles.welcome}>
-          API Calls
+          Pokemon
         </Text>
-        { this.state.movies.map((item, index)=>(
-          <Text key={index} style={styles.instructions}>
-            {item.title} - {item.releaseYear}
-          </Text>))
-        }
+
+        <View>
+          <Text>Name: {this.state.pokemon.name}</Text>
+          <Text>Weight: {this.state.pokemon.weight}</Text>
+          <Text>Height: {this.state.pokemon.height}</Text>
+
+          <Image
+            style={styles.pokeImage}
+            source={{uri: this.state.pokemon.image_url}}
+          />
+        </View>
       </View>
     );
   }
@@ -58,6 +61,10 @@ const styles = StyleSheet.create({
     fontSize: 20,
     textAlign: 'center',
     margin: 10,
+  },
+  pokeImage: {
+    width: 200,
+    height: 200
   },
   instructions: {
     textAlign: 'center',
